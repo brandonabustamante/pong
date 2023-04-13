@@ -15,6 +15,8 @@ WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 PADDLE_WIDTH = 20
 PADDLE_HEIGHT = 100
 BALL_RADIUS = 7
+SCORE_FONT = pygame.font.SysFont("comicsnas", 50)
+WINNING_SCORE = 10
 
 # Window title
 pygame.display.set_caption("Pong")
@@ -46,7 +48,9 @@ class Ball:
 
     def __init__(self, x, y, radius):
         self.x = x
+        self.original_x = x
         self.y = y
+        self.original_y = y
         self.radius = radius
         self.x_vel = self.MAX_VEL
         self.y_vel = 0
@@ -58,8 +62,20 @@ class Ball:
         self.x += self.x_vel
         self.y += self.y_vel
 
-def draw(win, paddles, ball):
+    def reset(self):
+        self.x = self.original_x
+        self.y = self.original_y
+        self.y_vel = 0
+        self.x_vel *= -1
+
+def draw(win, paddles, ball, left_score, right_score):
     win.fill(BLACK)
+
+    left_score_text = SCORE_FONT.render(f"{left_score}", 1, WHITE)
+    right_score_text = SCORE_FONT.render(f"{right_score}", 1, WHITE)
+
+    win.blit(left_score_text, (WIDTH // 4 - left_score_text.get_width() // 2, 20))
+    win.blit(right_score_text, (WIDTH * (3/4) - right_score_text.get_width() // 2, 20))
 
     for paddle in paddles:
         paddle.draw(win)
@@ -77,7 +93,7 @@ def draw(win, paddles, ball):
 def handle_collision(ball, left_paddle, right_paddle):
     # top
     if ball.y + ball.radius >= HEIGHT:
-        ball.y_val *= -1
+        ball.y_vel *= -1
 
     # bottom
     elif ball.y - ball.radius <= 0:
@@ -88,11 +104,26 @@ def handle_collision(ball, left_paddle, right_paddle):
         if ball.y >= left_paddle.y and ball.y <= left_paddle.y + left_paddle.height:
             if ball.x - ball.radius <= left_paddle.x + left_paddle.width:
                 ball.x_vel *= -1
+
+                middle_y = left_paddle.y + left_paddle.height / 2
+                difference_in_y = middle_y - ball.y
+                reduction_factor = (left_paddle.height / 2) / ball.MAX_VEL
+                y_vel = difference_in_y / reduction_factor
+                ball.y_vel = y_vel * -1
+
+
     # right paddle
     else:
         if ball.y >= right_paddle.y and ball.y <= right_paddle.y + right_paddle.height:
             if ball.x + ball.radius >= right_paddle.x:
                 ball.x_vel *= -1
+
+
+                middle_y = right_paddle.y + right_paddle.height / 2
+                difference_in_y = middle_y - ball.y
+                reduction_factor = (right_paddle.height / 2) / ball.MAX_VEL
+                y_vel = difference_in_y / reduction_factor
+                ball.y_vel = y_vel * -1
 
 
 def handle_paddle_movement(keys, left_paddle, right_paddle):
@@ -128,10 +159,13 @@ def main():
     
     ball = Ball(WIDTH // 2, HEIGHT // 2, BALL_RADIUS)
 
+    left_score = 0
+    right_score = 0
+
     # main game loop
     while run:
         clock.tick(FPS)
-        draw(WIN, [left_paddle, right_paddle], ball)
+        draw(WIN, [left_paddle, right_paddle], ball, left_score, right_score)
         # getting all events IE mouse clicks, keyboard inputs
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -143,6 +177,18 @@ def main():
         ball.move()
         handle_collision(ball, left_paddle, right_paddle)
 
+        if ball.x < 0:
+            right_score += 1
+            ball.reset()
+        elif ball.x > WIDTH:
+            left_score += 1
+            ball.reset()
+
+        if left_score >= WINNING_SCORE:
+            ball.reset()
+        elif right_score >= WINNING_SCORE:
+            ball.reset()
+            
     pygame.quit()
 
 if __name__ == '__main__':
