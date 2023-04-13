@@ -49,17 +49,21 @@ def draw(win, paddles):
 
 def handle_paddle_movement(keys, left_paddle, right_paddle):
     # left paddle uses w and s keys
-    if keys[pygame.K_w]:
+    # and checking if the paddle is in bounds (TOP)
+    if keys[pygame.K_w] and left_paddle.y - left_paddle.VEL >= 0:
         left_paddle.move(up=True)
 
-    if keys[pygame.K_s]:
+    # checking if the paddle is in bounds (BOTTOM)
+    if keys[pygame.K_s] and left_paddle.y + left_paddle.VEL + left_paddle.height <= HEIGHT:
         left_paddle.move(up=False)
 
     # right paddle uses up and down keys
-    if keys[pygame.K_UP]:
+    # and checking if the paddle is in bounds (TOP)
+    if keys[pygame.K_UP] and right_paddle.y - right_paddle.VEL >= 0:
         right_paddle.move(up=True)
 
-    if keys[pygame.K_DOWN]:
+    # checking if the paddle is in bounds (BOTTOM)
+    if keys[pygame.K_DOWN] and right_paddle.y + right_paddle.VEL + right_paddle.height <= HEIGHT:
         right_paddle.move(up=False)
 
 def main():
