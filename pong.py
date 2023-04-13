@@ -20,6 +20,7 @@ pygame.display.set_caption("Pong")
 
 class Paddle:
     COLOR = WHITE
+    VEL = 4
 
     def __init__(self, x, y, width, height):
         self.x = x
@@ -28,7 +29,15 @@ class Paddle:
         self.height = height
 
     def draw(self, win):
-        pygame.draw.rect(win, self.COLOR, (self.x, self.y, self.width, self.height))
+        pygame.draw.rect(
+            win, self.COLOR, (self.x, self.y, self.width, self.height))
+    
+    def move(self, up=True):
+
+        if up:
+            self.y -= self.VEL
+        else:
+            self.y += self.VEL
 
 def draw(win, paddles):
     win.fill(BLACK)
@@ -38,14 +47,32 @@ def draw(win, paddles):
 
     pygame.display.update()
 
+def handle_paddle_movement(keys, left_paddle, right_paddle):
+    # left paddle uses w and s keys
+    if keys[pygame.K_w]:
+        left_paddle.move(up=True)
+
+    if keys[pygame.K_s]:
+        left_paddle.move(up=False)
+
+    # right paddle uses up and down keys
+    if keys[pygame.K_UP]:
+        right_paddle.move(up=True)
+
+    if keys[pygame.K_DOWN]:
+        right_paddle.move(up=False)
+
 def main():
     run = True
     clock = pygame.time.Clock()
 
     # setting left paddle to ceter
-    left_paddle = Paddle(10, HEIGHT // 2 - PADDLE_HEIGHT // 2, PADDLE_WIDTH, PADDLE_HEIGHT)
+    left_paddle = Paddle(
+        10, HEIGHT // 2 - PADDLE_HEIGHT // 2, PADDLE_WIDTH, PADDLE_HEIGHT)
     # setting right paddle to center 
-    right_paddle = Paddle(WIDTH - 10 - PADDLE_WIDTH, HEIGHT // 2 - PADDLE_HEIGHT // 2, PADDLE_WIDTH, PADDLE_HEIGHT)
+    right_paddle = Paddle(
+        WIDTH - 10 - PADDLE_WIDTH, HEIGHT // 2 - PADDLE_HEIGHT // 2, 
+        PADDLE_WIDTH, PADDLE_HEIGHT)
 
     # main game loop
     while run:
@@ -57,6 +84,9 @@ def main():
                 run = False
                 break
     
+        keys = pygame.key.get_pressed()
+        handle_paddle_movement(keys, left_paddle, right_paddle)
+
     pygame.quit()
 
 if __name__ == '__main__':
