@@ -74,6 +74,27 @@ def draw(win, paddles, ball):
     ball.draw(win)
     pygame.display.update()
 
+def handle_collision(ball, left_paddle, right_paddle):
+    # top
+    if ball.y + ball.radius >= HEIGHT:
+        ball.y_val *= -1
+
+    # bottom
+    elif ball.y - ball.radius <= 0:
+        ball.y_vel *= -1
+
+    # left pabddle
+    if ball.x_vel < 0:
+        if ball.y >= left_paddle.y and ball.y <= left_paddle.y + left_paddle.height:
+            if ball.x - ball.radius <= left_paddle.x + left_paddle.width:
+                ball.x_vel *= -1
+    # right paddle
+    else:
+        if ball.y >= right_paddle.y and ball.y <= right_paddle.y + right_paddle.height:
+            if ball.x + ball.radius >= right_paddle.x:
+                ball.x_vel *= -1
+
+
 def handle_paddle_movement(keys, left_paddle, right_paddle):
     # left paddle uses w and s keys
     # and checking if the paddle is in bounds (TOP)
@@ -120,6 +141,7 @@ def main():
         keys = pygame.key.get_pressed()
         handle_paddle_movement(keys, left_paddle, right_paddle)
         ball.move()
+        handle_collision(ball, left_paddle, right_paddle)
 
     pygame.quit()
 
