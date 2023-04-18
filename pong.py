@@ -1,5 +1,6 @@
 ################################################################################
 import pygame
+import pygame_menu
 
 pygame.init()
 
@@ -8,6 +9,7 @@ WIDTH = 700
 HEIGHT = 500
 FPS = 60
 # Colors
+GREEN = (0, 100, 0)
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 # input is tuple with two parameters
@@ -16,13 +18,21 @@ PADDLE_WIDTH = 20
 PADDLE_HEIGHT = 100
 BALL_RADIUS = 7
 SCORE_FONT = pygame.font.SysFont("comicsnas", 50)
-WINNING_SCORE = 10
+WINNING_SCORE = 2
 
 # Window title
 pygame.display.set_caption("Pong")
 
+def draw_menu():
+    menu = pygame_menu.Menu("Welcome", WIDTH, HEIGHT, theme=pygame_menu.themes.THEME_GREEN)
+
+    menu.add.button('Play', main)
+    menu.add.button('Quit', pygame_menu.events.EXIT)
+
+    menu.mainloop(WIN)
+
 class Paddle:
-    COLOR = WHITE
+    COLOR = GREEN
     VEL = 4
 
     def __init__(self, x, y, width, height):
@@ -125,7 +135,6 @@ def handle_collision(ball, left_paddle, right_paddle):
             if ball.x + ball.radius >= right_paddle.x:
                 ball.x_vel *= -1
 
-
                 middle_y = right_paddle.y + right_paddle.height / 2
                 difference_in_y = middle_y - ball.y
                 reduction_factor = (right_paddle.height / 2) / ball.MAX_VEL
@@ -156,7 +165,7 @@ def main():
     run = True
     clock = pygame.time.Clock()
 
-    # setting left paddle to ceter
+    # setting left paddle to center
     left_paddle = Paddle(
         10, HEIGHT // 2 - PADDLE_HEIGHT // 2, PADDLE_WIDTH, PADDLE_HEIGHT)
     # setting right paddle to center 
@@ -210,8 +219,9 @@ def main():
             right_paddle.reset()
             left_score = 0
             right_score = 0
+            draw_menu()
 
     pygame.quit()
 
 if __name__ == '__main__':
-    main()
+    draw_menu()
