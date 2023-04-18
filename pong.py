@@ -1,37 +1,39 @@
+# Library Imports
 ################################################################################
 import pygame
 import pygame_menu
+################################################################################
 
 pygame.init()
 
-#   CONSTANTS
+# Constants
+################################################################################
 WIDTH = 700
 HEIGHT = 500
 FPS = 60
+# In milliseconds
+RESET_DELAY = 1000
 # Colors
-GREEN = (0, 100, 0)
-WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
-# input is tuple with two parameters
+WHITE = (255, 255, 255)
+GREEN = (0, 100, 0)
+# Style: *Use tuple*
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
+WIN_TITLE = "Pong"
+SCORE_FONT = pygame.font.SysFont("comicsnas", 50)
+# Assets
 PADDLE_WIDTH = 20
 PADDLE_HEIGHT = 100
 BALL_RADIUS = 7
-SCORE_FONT = pygame.font.SysFont("comicsnas", 50)
-WINNING_SCORE = 2
+# 
+WINNING_SCORE = 10
+################################################################################
 
 # Window title
 pygame.display.set_caption("Pong")
 
-def draw_menu():
-    menu = pygame_menu.Menu("Welcome", WIDTH, HEIGHT, 
-                            theme=pygame_menu.themes.THEME_GREEN)
-
-    menu.add.button('Play', main)
-    menu.add.button('Quit', pygame_menu.events.EXIT)
-
-    menu.mainloop(WIN)
-
+# Classes
+################################################################################
 class Paddle:
     COLOR = GREEN
     VEL = 4
@@ -59,7 +61,6 @@ class Paddle:
         self.x = self.original_x
         self.y = self.original_y
 
-
 class Ball:
     MAX_VEL = 5
     COLOR = WHITE
@@ -85,6 +86,17 @@ class Ball:
         self.y = self.original_y
         self.y_vel = 0
         self.x_vel *= -1
+################################################################################
+
+# Methods
+################################################################################
+def draw_menu():
+    menu = pygame_menu.Menu("Welcome", WIDTH, HEIGHT, 
+                            theme=pygame_menu.themes.THEME_GREEN)
+    
+    menu.add.button('Play', main)
+    menu.add.button('Quit', pygame_menu.events.EXIT)
+    menu.mainloop(WIN)
 
 def draw(win, paddles, ball, left_score, right_score):
     win.fill(BLACK)
@@ -132,7 +144,6 @@ def handle_collision(ball, left_paddle, right_paddle):
                 y_vel = difference_in_y / reduction_factor
                 ball.y_vel = y_vel * -1
 
-
     # right paddle
     else:
         if ball.y >= right_paddle.y and \
@@ -167,7 +178,10 @@ def handle_paddle_movement(keys, left_paddle, right_paddle):
     if keys[pygame.K_DOWN] and \
         right_paddle.y + right_paddle.VEL + right_paddle.height <= HEIGHT:
         right_paddle.move(up=False)
+################################################################################
 
+# Main
+################################################################################
 def main():
     run = True
     clock = pygame.time.Clock()
@@ -193,7 +207,7 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
-                break
+                return
     
         keys = pygame.key.get_pressed()
         handle_paddle_movement(keys, left_paddle, right_paddle)
@@ -221,7 +235,7 @@ def main():
             WIN.blit(text, (WIDTH // 2 - text.get_width(),
                              HEIGHT // 2 - text.get_height() // 2))
             pygame.display.update()
-            pygame.time.delay(5000)
+            pygame.time.delay(RESET_DELAY)
             ball.reset()
             left_paddle.reset()
             right_paddle.reset()
@@ -229,7 +243,9 @@ def main():
             right_score = 0
             draw_menu()
 
+    pygame.display.quit()
     pygame.quit()
+################################################################################
 
 if __name__ == '__main__':
     draw_menu()
