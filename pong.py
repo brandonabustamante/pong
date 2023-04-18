@@ -24,7 +24,8 @@ WINNING_SCORE = 2
 pygame.display.set_caption("Pong")
 
 def draw_menu():
-    menu = pygame_menu.Menu("Welcome", WIDTH, HEIGHT, theme=pygame_menu.themes.THEME_GREEN)
+    menu = pygame_menu.Menu("Welcome", WIDTH, HEIGHT, 
+                            theme=pygame_menu.themes.THEME_GREEN)
 
     menu.add.button('Play', main)
     menu.add.button('Quit', pygame_menu.events.EXIT)
@@ -91,8 +92,10 @@ def draw(win, paddles, ball, left_score, right_score):
     left_score_text = SCORE_FONT.render(f"{left_score}", 1, WHITE)
     right_score_text = SCORE_FONT.render(f"{right_score}", 1, WHITE)
 
-    win.blit(left_score_text, (WIDTH // 4 - left_score_text.get_width() // 2, 20))
-    win.blit(right_score_text, (WIDTH * (3/4) - right_score_text.get_width() // 2, 20))
+    win.blit(left_score_text,
+              (WIDTH // 4 - left_score_text.get_width() // 2, 20))
+    win.blit(right_score_text,
+              (WIDTH * (3/4) - right_score_text.get_width() // 2, 20))
 
     for paddle in paddles:
         paddle.draw(win)
@@ -118,7 +121,8 @@ def handle_collision(ball, left_paddle, right_paddle):
 
     # left pabddle
     if ball.x_vel < 0:
-        if ball.y >= left_paddle.y and ball.y <= left_paddle.y + left_paddle.height:
+        if ball.y >= left_paddle.y and \
+            ball.y <= left_paddle.y + left_paddle.height:
             if ball.x - ball.radius <= left_paddle.x + left_paddle.width:
                 ball.x_vel *= -1
 
@@ -131,7 +135,8 @@ def handle_collision(ball, left_paddle, right_paddle):
 
     # right paddle
     else:
-        if ball.y >= right_paddle.y and ball.y <= right_paddle.y + right_paddle.height:
+        if ball.y >= right_paddle.y and \
+            ball.y <= right_paddle.y + right_paddle.height:
             if ball.x + ball.radius >= right_paddle.x:
                 ball.x_vel *= -1
 
@@ -149,7 +154,8 @@ def handle_paddle_movement(keys, left_paddle, right_paddle):
         left_paddle.move(up=True)
 
     # checking if the paddle is in bounds (BOTTOM)
-    if keys[pygame.K_s] and left_paddle.y + left_paddle.VEL + left_paddle.height <= HEIGHT:
+    if keys[pygame.K_s] and \
+        left_paddle.y + left_paddle.VEL + left_paddle.height <= HEIGHT:
         left_paddle.move(up=False)
 
     # right paddle uses up and down keys
@@ -158,7 +164,8 @@ def handle_paddle_movement(keys, left_paddle, right_paddle):
         right_paddle.move(up=True)
 
     # checking if the paddle is in bounds (BOTTOM)
-    if keys[pygame.K_DOWN] and right_paddle.y + right_paddle.VEL + right_paddle.height <= HEIGHT:
+    if keys[pygame.K_DOWN] and \
+        right_paddle.y + right_paddle.VEL + right_paddle.height <= HEIGHT:
         right_paddle.move(up=False)
 
 def main():
@@ -211,7 +218,8 @@ def main():
 
         if won:
             text = SCORE_FONT.render(win_text, 1, WHITE)
-            WIN.blit(text, (WIDTH // 2 - text.get_width(), HEIGHT // 2 - text.get_height() // 2))
+            WIN.blit(text, (WIDTH // 2 - text.get_width(),
+                             HEIGHT // 2 - text.get_height() // 2))
             pygame.display.update()
             pygame.time.delay(5000)
             ball.reset()
