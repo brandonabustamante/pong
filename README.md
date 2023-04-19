@@ -7,7 +7,7 @@ To run this game, you must have PyGame and PyGame Menu installed.\
 ## Controls
 Left Paddle:\
 Move Up = W\
-Move Down = S
+Move Down = S\
 Right Paddle:\
 Move Up = UP ARROW\
 Move Down = DOWN ARROW
